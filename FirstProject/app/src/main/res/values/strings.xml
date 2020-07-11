@@ -10,4 +10,6 @@
     <string name="hello_world">Hello World</string>
     <string name="phone_num_description">Phone Number</string>
     <string name="email_description">Email</string>
+    <string name="hiddenImage">hidden</string>
+
 </resources>
