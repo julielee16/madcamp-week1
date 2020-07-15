@@ -98,13 +98,17 @@ public class MoodListAdapter extends RecyclerView.Adapter<MoodListAdapter.MoodLi
             int mPosition = getLayoutPosition();
             // Use that to access the affected item in mMoodList
             Mood element = mMoodList.get(mPosition);
-            openFragment(mPosition);
-            if(((MainActivity)context).getNewMood() != null && filled == false) {
+            if(((MainActivity)context).getNewMood() != null) {
                 element.setMood(((MainActivity) context).getNewMood());
+                element.setText(((MainActivity) context).getNewDiary());
                 mMoodList.set(mPosition, element);
                 mAdapter.notifyDataSetChanged();
                 ((MainActivity)context).setNewMood(null);
-                filled = true;
+                ((MainActivity)context).setNewDiary(null);
+                openDetailFragment(element.getMood(), element.getPicture(), element.getText());
+            }
+            else{
+                openFragment(mPosition);
             }
         }
 
@@ -117,6 +121,17 @@ public class MoodListAdapter extends RecyclerView.Adapter<MoodListAdapter.MoodLi
             transaction.addToBackStack(null);
             transaction.add(R.id.mood_list_fragment_container, fragment,
                     "MOOD_LIST_FRAGMENT").commit();
+        }
+
+        public void openDetailFragment(String mood, String path, String text) {
+            MoodDetailFragment fragment =
+                    MoodDetailFragment.newInstance(mood, path, text);
+            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+            transaction.addToBackStack(null);
+            transaction.add(R.id.mood_detail_fragment_container, fragment,
+                    "MOOD_Detail_FRAGMENT").commit();
         }
     }
 }

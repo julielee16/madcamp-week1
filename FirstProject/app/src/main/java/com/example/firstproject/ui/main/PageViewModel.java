@@ -1,7 +1,5 @@
 package com.example.firstproject.ui.main;
 
-import android.content.ClipData;
-
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

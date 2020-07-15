@@ -6,13 +6,17 @@ public class Mood {
     int myDate = 0;
     String myDay;
     String myMood;
+    String myPicturePath;
+    String myText;
 
-    public Mood(int year, int month, int date, String day, String mood) {
+    public Mood(int year, int month, int date, String day, String mood, String pic, String diary) {
         this.myYear = year;
         this.myMonth = month;
         this.myDate = date;
         this.myDay = day;
         this.myMood = mood;
+        this.myPicturePath = pic;
+        this.myText = diary;
     }
 
     public int getYear() {
@@ -52,5 +56,21 @@ public class Mood {
 
     public void setMood(String mood) {
         myMood = mood;
+    }
+
+    public String getPicture() {
+        return myPicturePath;
+    }
+
+    public void setPicture(String path) {
+        myPicturePath = path;
+    }
+
+    public String getText() {
+        return myText;
+    }
+
+    public void setText(String text) {
+        myText= text;
     }
 }

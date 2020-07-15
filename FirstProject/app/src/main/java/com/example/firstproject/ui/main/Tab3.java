@@ -165,7 +165,7 @@ public class Tab3 extends Fragment {
                     else {
                         month += 1;
                     }
-                    openMonthFragment(year, month);
+                    openRightMonthFragment(year, month);
                 }
             });
 
@@ -179,7 +179,7 @@ public class Tab3 extends Fragment {
                     else {
                         month -= 1;
                     }
-                    openMonthFragment(year, month);
+                    openLeftMonthFragment(year, month);
                 }
             });
         }
@@ -207,7 +207,7 @@ public class Tab3 extends Fragment {
                 Mood aMood = new Mood(Integer.parseInt(moodObject.getString("year")),
                         Integer.parseInt(moodObject.getString("month")),
                         Integer.parseInt(moodObject.getString("date")), moodObject.get("day").toString()
-                        , moodObject.get("mood").toString());
+                        , moodObject.get("mood").toString(), "", "");
                 moodList.add(aMood);
             }
         }
@@ -215,12 +215,24 @@ public class Tab3 extends Fragment {
         return moodList;
     }
 
-    public void openMonthFragment(int year, int month) {
+    public void openLeftMonthFragment(int year, int month) {
         Tab3 fragment = Tab3.newInstance(year, month);
         FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
         fragmentManager.popBackStack();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+        //transaction.addToBackStack(null);
+        transaction.add(R.id.mood_list_fragment_container, fragment, "MOOD_LIST_FRAGMENT").commit();
+        //mAdapter.notifyDataSetChanged();
+    }
+
+    public void openRightMonthFragment(int year, int month) {
+        Tab3 fragment = Tab3.newInstance(year, month);
+        FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+        fragmentManager.popBackStack();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_left,
+                R.anim.enter_from_left, R.anim.exit_to_left);
         //transaction.addToBackStack(null);
         transaction.add(R.id.mood_list_fragment_container, fragment, "MOOD_LIST_FRAGMENT").commit();
         //mAdapter.notifyDataSetChanged();

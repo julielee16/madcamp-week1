@@ -1,73 +1,49 @@
 package com.example.firstproject.ui.main;
 
-import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.example.firstproject.R;
 import android.graphics.Matrix;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 
 public class MoodEditFragment extends Fragment {
     private String[] feelings = {"Not Chosen", "Joy", "Sadness", "Anger", "Neutral"};
     private Spinner spinner;
     private Context context;
     private ImageView selectedImage;
+    private EditText edit_text;
     private Button edit_button;
 
     private static final String POS = "position";
     private int mPosition;
     private int PICK_IMAGE_REQUEST = 1;
     private LinearLayout layout;
-
-    private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
-    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {Manifest.permission.READ_EXTERNAL_STORAGE};
-
 
     public MoodEditFragment() {
         // Required empty public constructor
@@ -106,14 +82,17 @@ public class MoodEditFragment extends Fragment {
             setSpinnerData();
             layout = (LinearLayout) view.findViewById(R.id.tab3_layout);
             spinnerChosen();
-            String mood = spinner.getSelectedItem().toString().toLowerCase();
-            ((MainActivity)getActivity()).setNewMood(mood);
             selectedImage = (ImageView) view.findViewById(R.id.picAdded);
             setPic();
+            edit_text = view.findViewById(R.id.add_diary_fragment);
             edit_button = (Button) view.findViewById(R.id.mood_edit_button);
             edit_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    String mood = spinner.getSelectedItem().toString().toLowerCase();
+                    String diary = edit_text.getText().toString();
+                    ((MainActivity)getActivity()).setNewMood(mood);
+                    ((MainActivity)getActivity()).setNewDiary(diary);
                     getParentFragmentManager().popBackStack();
                 }
             });
@@ -155,7 +134,6 @@ public class MoodEditFragment extends Fragment {
         selectedImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                checkPermissions();
                 Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 try {
                     startActivityForResult(Intent.createChooser(i, "Select Picture"), PICK_IMAGE_REQUEST);

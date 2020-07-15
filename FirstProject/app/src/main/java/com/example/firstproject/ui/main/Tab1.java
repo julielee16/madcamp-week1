@@ -1,20 +1,13 @@
 package com.example.firstproject.ui.main;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 
 import com.example.firstproject.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -29,11 +22,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 import android.provider.ContactsContract;
 import android.view.ViewGroup;
@@ -50,9 +39,6 @@ public class Tab1 extends Fragment {
     public static boolean fabVisible;
     private FloatingActionButton fab;
     private Context context;
-    private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
-    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_PHONE_NUMBERS,
-            Manifest.permission.CALL_PHONE, Manifest.permission.CAMERA};
 
     public Tab1() {
         // Required empty public constructor
@@ -67,9 +53,7 @@ public class Tab1 extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        checkPermissions();
         super.onCreate(savedInstanceState);
-//        checkPermissions();
     }
 
     @Override
@@ -238,42 +222,5 @@ public class Tab1 extends Fragment {
             }
         }
         return contactList;
-    }
-
-    protected void checkPermissions() {
-        final List<String> missingPermissions = new ArrayList<String>();
-        // check all required dynamic permissions
-        for (final String permission : REQUIRED_SDK_PERMISSIONS) {
-            final int result = ContextCompat.checkSelfPermission(getContext(), permission);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(permission);
-            }
-        }
-        if (!missingPermissions.isEmpty()) {
-            // request all missing permissions
-            final String[] permissions = missingPermissions.toArray(new String[missingPermissions.size()]);
-            ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_CODE_ASK_PERMISSIONS);
-        } else {
-            final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
-            Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
-            onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
-                    grantResults);
-        }
-    }
-
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE_ASK_PERMISSIONS:
-                for (int index = permissions.length - 1; index >= 0; --index) {
-                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
-                        // exit the app if one permission is not granted
-                        getActivity().finish();
-                        return;
-                    }
-                }
-                // all permissions were granted
-//                initialize();
-                break;
-        }
     }
 }

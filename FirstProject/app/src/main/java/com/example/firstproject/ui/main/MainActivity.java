@@ -37,6 +37,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     String mood;
+    String diary;
     final int[] ICONS = new int[]{R.drawable.users, R.drawable.image_icon, R.drawable.calendar};
     private TabLayout tabs;
 
@@ -116,5 +117,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void setNewMood(String newMood) {
         this.mood = newMood;
+    }
+
+    public String getNewDiary() {
+        return diary;
+    }
+
+    public void setNewDiary(String newDiary) {
+        this.diary = newDiary;
     }
 }
