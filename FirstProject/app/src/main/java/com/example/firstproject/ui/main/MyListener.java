@@ -1,4 +1,5 @@
 package com.example.firstproject.ui.main;
 
-public class MyListener {
+public interface MyListener {
+    void updateView(boolean success, int position, String mood);
 }

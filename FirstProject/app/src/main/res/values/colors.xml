@@ -4,4 +4,10 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="black">#000000</color>
+    <color name="Anger">#e64c5e</color>
+    <color name="Neutral">#c2bfba</color>
+    <color name="Sadness">#95bdde</color>
+    <color name="Joy">#f5ef84</color>
+    <color name="white">#ffffff</color>
+    <color name="tab_color">#EEEFEF</color>
 </resources>

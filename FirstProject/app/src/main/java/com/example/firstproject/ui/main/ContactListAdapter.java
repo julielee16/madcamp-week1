@@ -28,7 +28,7 @@ import java.util.LinkedList;
 public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.ContactViewHolder> {
     private static final int REQUEST_CALL = 1;
 
-    private final LinkedList<Person> mContactList;
+    private LinkedList<Person> mContactList;
     private LayoutInflater mInflater;
     private Context context;
 
@@ -65,7 +65,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
         public final TextView phoneNumItemView;
         public final ImageView imageCall;
 
-        final ContactListAdapter mAdapter;
+        public ContactListAdapter mAdapter;
         public FrameLayout fragmentContainer;
         public String phoneNum;
 
@@ -95,9 +95,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
             else {
                 // Change the word in the mContactList.
                 openFragment(element.getName(), element.getPhoneNum(), element.getEmail(), element.getNickname());
-                mContactList.set(mPosition, element);
-                // Notify the adapter, that the data has changed so it can update the RecyclerView to display the data.
-                mAdapter.notifyDataSetChanged();
             }
         }
 
@@ -108,6 +105,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
             transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
             transaction.addToBackStack(null);
             transaction.add(R.id.contact_info_fragment_container, fragment, "CONTACT_DETAILS_FRAGMENT").commit();
+            mAdapter.notifyDataSetChanged();
         }
 
         private void makePhoneCall() {

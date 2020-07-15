@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">FirstProject</string>
+    <string name="app_name">Mood Tracker</string>
     <string name="action_settings">Settings</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
-    <string name="tab_text_3">Tab 3</string>
+    <string name="tab_text_1">Contact</string>
+    <string name="tab_text_2">Gallery</string>
+    <string name="tab_text_3">Mood</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -11,5 +11,22 @@
     <string name="phone_num_description">Phone Number</string>
     <string name="email_description">Email</string>
     <string name="hiddenImage">hidden</string>
+    <string name="write_diary">What happened today?</string>
+    <string name="select_feeling">How did you feel today?</string>
+    <string name="pic">Pic of the Day </string>
+    <string name="no_image"> No Image in Gallery </string>
+    <string name="profile_pic">Profile Picture</string>
+    <string name="call">Call</string>
+    <string name="left_arrow"><![CDATA[<]]></string>
+    <string name="right_arrow"><![CDATA[>]]></string>
+    <string name="add_button">Add</string>
+    <string name="mood_edit">Done</string>
 
+    <string-array name="feelings">
+        <item>Not Chosen</item>
+        <item>Joy</item>
+        <item>Sadness</item>
+        <item>Anger</item>
+        <item>Neutral</item>
+    </string-array>
 </resources>

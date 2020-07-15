@@ -1,15 +1,20 @@
 package com.example.firstproject.ui.main;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 
 import com.example.firstproject.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,17 +25,34 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import android.provider.ContactsContract;
 import android.view.ViewGroup;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Tab1 extends Fragment {
     private static LinkedList<Person> mContactList = new LinkedList<>();
     private static RecyclerView mRecyclerView;
     private static ContactListAdapter mAdapter;
+    public static boolean allowRefresh = false;
     public static boolean fabVisible;
+    private FloatingActionButton fab;
     private Context context;
+    private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
+    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_PHONE_NUMBERS,
+            Manifest.permission.CALL_PHONE, Manifest.permission.CAMERA};
 
     public Tab1() {
         // Required empty public constructor
@@ -45,7 +67,9 @@ public class Tab1 extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        checkPermissions();
         super.onCreate(savedInstanceState);
+//        checkPermissions();
     }
 
     @Override
@@ -57,7 +81,13 @@ public class Tab1 extends Fragment {
 
         if(context != null) {
             // Get the list of contacts from the phone
-            mContactList = getContactList();
+            try {
+                mContactList = getContactList();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             // Get a handle to the RecyclerView.
             mRecyclerView = view.findViewById(R.id.recyclerview);
             // Create an adapter and supply the data to be displayed.
@@ -66,12 +96,46 @@ public class Tab1 extends Fragment {
             mRecyclerView.setAdapter(mAdapter);
             // Give the RecyclerView a default layout manager.
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            fab = view.findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openAddFragment();
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+
         }
+
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (allowRefresh) {
+            allowRefresh = false;
+            final FragmentTransaction ft =
+                    getActivity().getSupportFragmentManager().beginTransaction();
+            ft.detach(this);
+            ft.attach(this);
+            ft.commit();
+        }
+    }
+
+    public void openAddFragment() {
+        allowRefresh = true;
+        AddFragment fragment = AddFragment.newInstance();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.contact_info_fragment_container, fragment,
+                "CONTACT_DETAILS_FRAGMENT").commit();
+    }
+
     @SuppressLint("MissingPermission")
-    private LinkedList<Person> getContactList () {
+    private LinkedList<Person> getContactList () throws IOException, JSONException {
         LinkedList<Person> contactList = new LinkedList<Person>();
 
         if (context != null) {
@@ -145,7 +209,71 @@ public class Tab1 extends Fragment {
                 }
                 contacts.close();
             }
+
+            File file = new File(context.getExternalFilesDir(null), "contact_list.json");
+            if (file.exists()) {
+                Log.d("d", "file exists!");
+                FileReader fileReader = new FileReader(file);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                StringBuilder stringBuilder = new StringBuilder();
+                String line = bufferedReader.readLine();
+                while (line != null) {
+                    stringBuilder.append(line).append("\n");
+                    line = bufferedReader.readLine();
+                }
+                bufferedReader.close();
+
+                JSONObject jsonObject = new JSONObject(stringBuilder.toString());
+                JSONArray jsonPersonList = jsonObject.getJSONArray("contact_list");
+
+                for (int i = 0; i < jsonPersonList.length(); i++) {
+                    JSONObject personObject = jsonPersonList.getJSONObject(i);
+                    Person aPerson = new Person();
+                    aPerson.setName(personObject.getString("name"));
+                    aPerson.setPhoneNum(personObject.getString("phone_num"));
+                    aPerson.setEmail(personObject.getString("email"));
+                    aPerson.setNickname(personObject.getString("nickname"));
+                    contactList.add(aPerson);
+                }
+            }
         }
         return contactList;
+    }
+
+    protected void checkPermissions() {
+        final List<String> missingPermissions = new ArrayList<String>();
+        // check all required dynamic permissions
+        for (final String permission : REQUIRED_SDK_PERMISSIONS) {
+            final int result = ContextCompat.checkSelfPermission(getContext(), permission);
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                missingPermissions.add(permission);
+            }
+        }
+        if (!missingPermissions.isEmpty()) {
+            // request all missing permissions
+            final String[] permissions = missingPermissions.toArray(new String[missingPermissions.size()]);
+            ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_CODE_ASK_PERMISSIONS);
+        } else {
+            final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
+            Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
+            onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
+                    grantResults);
+        }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                for (int index = permissions.length - 1; index >= 0; --index) {
+                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+                        // exit the app if one permission is not granted
+                        getActivity().finish();
+                        return;
+                    }
+                }
+                // all permissions were granted
+//                initialize();
+                break;
+        }
     }
 }

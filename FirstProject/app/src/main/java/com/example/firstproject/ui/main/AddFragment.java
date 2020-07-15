@@ -5,14 +5,31 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.firstproject.R;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,6 +55,7 @@ public class AddFragment extends Fragment {
     private EditText addPhoneNumFragment;
     private EditText addEmailFragment;
     private EditText addNicknameFragment;
+    private Button addButton;
 
     public AddFragment() {
         // Required empty public constructor
@@ -66,7 +84,7 @@ public class AddFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =inflater.inflate(R.layout.fragment_add, container, false);
+        View view = inflater.inflate(R.layout.fragment_add, container, false);
         addNameFragment = view.findViewById(R.id.add_name_fragment);
         addPhoneNumFragment = view.findViewById(R.id.add_phone_num_fragment);
         addEmailFragment = view.findViewById(R.id.add_email_fragment);
@@ -83,17 +101,94 @@ public class AddFragment extends Fragment {
         inputManager.hideSoftInputFromWindow(addEmailFragment.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
         inputManager.hideSoftInputFromWindow(addNicknameFragment.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 
+        addButton = view.findViewById(R.id.add_button);
 
-        //addNameFragment.getText();
-        //addPhoneNumFragment.getText();
-        //addEmailFragment.getText();
-        //addNicknameFragment.getText();
-
+        addButton.setOnClickListener(new View.OnClickListener()
+                {
+                    public void onClick(View view)
+                    {
+                        try {
+                            String hyphen = addPhoneNumFragment.getText().toString();
+                            if(addPhoneNumFragment.getText().toString().length() == 11) {
+                                hyphen = hyphen.substring(0,3) + "-" + hyphen.substring(3,7) +
+                                        "-" + hyphen.substring(7,11);
+                            }
+                            addContact(addNameFragment.getText().toString(),
+                                    hyphen,
+                                    addEmailFragment.getText().toString(), addNicknameFragment.getText().toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        getParentFragmentManager().popBackStack();
+                    }
+                });
         return view;
     }
 
     public static void hideKeyboardFrom(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public void addContact(String name, String phone_num, String email, String nickname) throws JSONException, IOException {
+
+        File tempFile = new File(getActivity().getExternalFilesDir(null), "contact_list.json");
+        if(!tempFile.exists()) {
+            tempFile.createNewFile();
+            FileOutputStream tempfos = new FileOutputStream(tempFile);
+            BufferedWriter tempBufferedWriter = new BufferedWriter(new OutputStreamWriter(tempfos));
+
+            JSONArray tempPersonList = new JSONArray();
+
+            JSONObject tempPerson = new JSONObject();
+            tempPerson.put("name", name);
+            tempPerson.put("phone_num", phone_num);
+            tempPerson.put("email", email);
+            tempPerson.put("nickname", nickname);
+            tempPersonList.put(tempPerson);
+
+            JSONObject updated = new JSONObject();
+            updated.put("contact_list", tempPersonList);
+            tempBufferedWriter.write(updated.toString(3));
+            tempBufferedWriter.close();
+            tempfos.close();
+        }
+
+        else {
+            File file = new File(getActivity().getExternalFilesDir(null), "contact_list.json");
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            StringBuilder stringBuilder = new StringBuilder();
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                stringBuilder.append(line).append("\n");
+                line = bufferedReader.readLine();
+            }
+            bufferedReader.close();
+            fileReader.close();
+
+            JSONObject jsonObject = new JSONObject(stringBuilder.toString());
+            JSONArray jsonPersonList = jsonObject.getJSONArray("contact_list");
+
+            JSONObject person = new JSONObject();
+            person.put("name", name);
+            person.put("phone_num", phone_num);
+            person.put("email", email);
+            person.put("nickname", nickname);
+
+            jsonPersonList.put(person);
+
+            JSONObject updated = new JSONObject();
+            updated.put("contact_list", jsonPersonList);
+
+            file = new File(getActivity().getExternalFilesDir(null), "contact_list.json");
+            FileOutputStream fos = new FileOutputStream(file);
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(fos));
+            bufferedWriter.write(updated.toString(3));
+            bufferedWriter.close();
+            fos.close();
+        }
     }
 }
