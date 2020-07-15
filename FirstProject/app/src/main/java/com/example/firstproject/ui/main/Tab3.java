@@ -215,7 +215,7 @@ public class Tab3 extends Fragment {
         return moodList;
     }
 
-    public void openLeftMonthFragment(int year, int month) {
+    public void openRightMonthFragment(int year, int month) {
         Tab3 fragment = Tab3.newInstance(year, month);
         FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
         fragmentManager.popBackStack();
@@ -226,7 +226,7 @@ public class Tab3 extends Fragment {
         //mAdapter.notifyDataSetChanged();
     }
 
-    public void openRightMonthFragment(int year, int month) {
+    public void openLeftMonthFragment(int year, int month) {
         Tab3 fragment = Tab3.newInstance(year, month);
         FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
         fragmentManager.popBackStack();
