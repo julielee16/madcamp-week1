@@ -20,12 +20,19 @@
 
 ### 1. 연락처 (Contacts) ###
 * Tab1: User에게 Permission을 받아 Intent를 사용하여 기기 내 Contact에서 연락처를 받아와서 RecyclerView로 나타냄. FragmentManager와 Transaction을 통하여 다른 탭으로 넘어가면 Refresh 됨.
+* Person: 각 연락처의 정보를 담고 있는 Java Object.
 * ContactDetailsFragment: 각 연락처를 누르면 나타나는 기타 정보가 담긴 큰 화면을 위한 Fragment.
 * ContactListAdapter: RecyclerView를 위한 Adapter.
+* AddFragment: Floating Action Button을 누르면 생성되는 새로운 연락처를 넣기위한 EditText가 있는 Fragment. ContactList에 새로운 Person을 만들어 넣고 JSON 파일에 write를 함. 
 * JSONParsing 사용하여 PersonList를 저장했기 때문에 앱을 종료해도 다시 열면 이전 추가한 연락처가 기록되어 있음.
 
 ### 2. 사진첩 (Gallery) ###
-* Tab2: gallery에서 사진을 받아와서 gridview로 나타냄. 이미지를 누르면 이미지가 커지고 그 이미지를 다시 누르면 이미지가 작아짐
+* Tab2: Gallery에서 사진을 받아와서 GridView로 나타냄. Animator를 사용하여 누르면 이미지가 커지고 그 이미지를 다시 누르면 이미지가 작아짐.
+* GalleryAdapter: 갤러리 구성을 위한 Adapter.
 
 ### 3. 무드트래커 (Mood Tracker) ###
-* Tab3: json사용하여 달력을 구현하고 달력의 각 날짜를 누르면 그 날의 기분, 사진, 짧은 일기를 쓸 수 있음
+* Tab3: JSON을 사용하여 달력을 구현함. MoodList_Item을 만들어 GridViewLayout이 있는 RecyclerView에 Adapter를 사용하여 넣음. 위에 있는 두 버튼을 통하여 달을 바꿀 수 있음. DateFormat을 통하여 각 날짜의 요일을 구함. 가장 먼저 뜨는 월은 현재 월임.
+* Mood: 각 날짜의 정보를 담고 있는 Java Object.
+* MoodDetailFragment: 각 날짜를 누르면 이전에 기록한 정보가 나오는 Fragment.
+* MoodListAdapter: RecyclerView를 위한 Adapter.
+* MoodEditFragment: 아무 기록없는 날짜를 누르면 새로운 Mood를 넣기위한 Spinner/EditText/ImageView가 있는 Fragment. Spinner를 사용하여 각 Mood를 정하고 결정된 Spinner에 따라 layout 색깔이 변함. <joy: 노란색, sadness: 파란색, anger: 빨간색, neutral: 회색, not chosen: 흰색)
